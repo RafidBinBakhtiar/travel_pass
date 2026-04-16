@@ -63,11 +63,11 @@ class AuthRepository {
     }
   }
 
-  Future<void> verifyRegistrationOtp(String emailOrPhone, String otp) async {
+  Future<void> verifyRegistrationOtp(String phone, String otp) async {
     try {
       final response = await _dio.post(
-        '/auth/verify-login',
-        data: {'emailOrPhone': emailOrPhone, 'otp': otp},
+        '/auth/verify-registration',
+        data: {'phone': phone, 'otp': otp},
       );
       print('✅ REGISTRATION OTP: ${response.data}');
 

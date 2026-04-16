@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_pass/core/constants/app_colors.dart';
 import 'package:travel_pass/core/constants/app_fonts.dart';
-import 'package:travel_pass/l10n/app_localizations.dart';
+import 'package:travel_pass/features/profile/screens/profile_screen.dart';
 import 'package:travel_pass/main.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -12,7 +12,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final font = AppFonts.forLocale(locale);
 
@@ -28,17 +27,6 @@ class HomeScreen extends ConsumerWidget {
         ),
         centerTitle: true,
         actions: [
-          // Logout Button
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              // Log out the user
-              ref.read(verificationStatusProvider.notifier).logout();
-              // Navigate back to login screen
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            tooltip: 'Logout',
-          ),
           // Language Toggle Button
           PopupMenuButton<String>(
             onSelected: (language) {
@@ -84,7 +72,31 @@ class HomeScreen extends ConsumerWidget {
             ],
             icon: const Icon(Icons.language, color: Colors.white),
           ),
-          const SizedBox(width: 8),
+          // Profile Button
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ProfileScreen(),
+                  ),
+                );
+              },
+              child: Tooltip(
+                message: 'Profile',
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white.withValues(alpha: 0.25),
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
 
@@ -165,7 +177,13 @@ class HomeScreen extends ConsumerWidget {
                 title: 'Profile',
                 subtitle: 'Edit your travel preferences',
                 font: font,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileScreen(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 32),
 

@@ -208,3 +208,58 @@ Countdown Timer: Starts a 60-second loop. Once hitting 0, it logically activates
 Submit Validation: As the user begins typing, the Verify button ("এগিয়ে যান") disables until the input reaches exactly 4 characters.
 
 - 3. Closely observe the otp_pin_field the screenshot I provided and implement every single features I told for OTP_page, all OTP_page should follow a single design. 
+
+
+=======================!=================================
+
+A new update, previously we were verifying the phone if it was not verified, the registration could be successful without even verifying the phone just by clicking "অ্যাকাউন্ট তৈরি করুন". But now a account cannot be possible to be created without verifying the phone OTP. After a registration, there must be a OTP verification stage, if a user clicks "পরিবর্তন করুন" then it will just take to previous state none of the information will be erased as we have a unified OTP verification system.
+
+We have a new API, /auth/verify-registration
+
+{
+    "phone": "+8801700000000",
+    "otp": "1234"
+}
+
+==========================!============================
+So, authentication part is complete. Now, let's do the profile part. So, we have home_screen.dart which we call dashboard. A user logs in and enter in dashboard. So, there is a "Profile" button in the top right corner. When a user clicks on "Profile" button, it will take him to the profile page. The design of profile page is given. 
+
+1. {{base_url}}/auth/me (GET)
+Response: 
+{
+    "success": true,
+    "message": "Operation successful",
+    "data": {
+        "id": 3,
+        "fullName": "Rafid",
+        "email": "rafid@gmail.com",
+        "phone": "+8801907199135",
+        "isEmailVerified": true,
+        "roles": [
+            "tourist"
+        ],
+        "permissions": [
+            "applications.read",
+            "applications.create",
+            "applications.update",
+            "applications.delete"
+        ]
+    },
+    "errors": null
+}
+
+2. {{base_url}}/auth/me (PUT)
+Request:
+{
+    "fullName": "System Admin (Updated)",
+    "email": "admin.updated@tourism.com",
+    "phone": "+8801700000001",
+    "touristType": "DOMESTIC"
+}
+3. {{base_url}}/auth/change-password
+{
+    "currentPassword": "Admin@123",
+    "newPassword": "NewSecret123!"
+}
+
+
