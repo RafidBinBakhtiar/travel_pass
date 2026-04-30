@@ -24,22 +24,20 @@ class UserProfile {
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,
-      roles: (json['roles'] as List<dynamic>?)
+      roles:
+          (json['roles'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      permissions: (json['permissions'] as List<dynamic>?)
+      permissions:
+          (json['permissions'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
     );
   }
 
-  UserProfile copyWith({
-    String? fullName,
-    String? email,
-    String? phone,
-  }) {
+  UserProfile copyWith({String? fullName, String? email, String? phone}) {
     return UserProfile(
       id: id,
       fullName: fullName ?? this.fullName,
@@ -66,11 +64,11 @@ class UpdateProfileRequest {
   });
 
   Map<String, dynamic> toJson() => {
-        'fullName': fullName,
-        if (email.isNotEmpty) 'email': email,
-        'phone': phone,
-        'touristType': touristType,
-      };
+    'fullName': fullName,
+    if (email.isNotEmpty) 'email': email,
+    'phone': phone,
+    'touristType': touristType,
+  };
 }
 
 class ChangePasswordRequest {
@@ -83,7 +81,7 @@ class ChangePasswordRequest {
   });
 
   Map<String, dynamic> toJson() => {
-        'currentPassword': currentPassword,
-        'newPassword': newPassword,
-      };
+    'currentPassword': currentPassword,
+    'newPassword': newPassword,
+  };
 }

@@ -21,6 +21,9 @@ dependencies:
   intl: 0.20.2
   cupertino_icons: ^1.0.8
   otp_pin_field: ^1.4.1
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.1
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:

@@ -263,3 +263,46 @@ Request:
 }
 
 
+===================================!====================================
+When a user will be logged in, a dashboard (Blank) is shown which is home_screen.dart. Which have a button "ট্রাভেল পারমিট আবেদন করুন". Clicking on that it will open, "ট্রাভেল পারমিট আবেদনফর্ম" (travel_permit_application_form.dart). "ট্রাভেল পারমিট আবেদনফর্ম" have three stages, 'আবেদনফর্ম', 'নথিপত্র আপলোড', 'ফি প্রদান'.  
+
+1. আবেদনফর্ম
+2. নথিপত্র আপলোড
+3. ফি প্রদান
+ Create Application
+{
+    "touristName": "John Doe",
+    "mobileNumber": "01712345678",
+    "guardianName": "Jane Doe",
+    "guardianMobile": "01700000000",
+    "permanentAddress": "Dhaka, Bangladesh",
+    "presentAddress": "Cox's Bazar, Bangladesh",
+    "occupation": "Student",
+    "placeOfOrigin": "Dhaka",
+    "destination": "Cox's Bazar",
+    "arrivalDate": "2024-04-01T10:00:00Z",
+    "departureDate": "2024-04-05T18:00:00Z",
+    "touristType": "DOMESTIC",
+    "documents": [
+        { "name": "NID", "url": "https://example.com/media/nid.jpg" },
+        { "name": "Photo", "url": "https://example.com/media/photo.jpg" }
+    ]
+}
+
+{{base_url}}/applications/1/permit_certificate
+{{base_url}}/applications (Get, Create Application)
+{{base_url}}/applications/1 (Get)
+{{base_url}}/applications/:id (Patch)
+
+{{base_url}}/applications/:id
+{{base_url}}/applications/:id
+
+
+=========================================!===========================================
+
+I want to implement a new feature in the application. I want to integrate payment gateway after successfull create application. There is Shurjopay and Bkash. The Json file is given. Whenever, a user clicks 'ফি প্রদান করুন' he will be redirected to payment gateway. After payment successfull, he will be redirected to payment success page. The design of payment success page is given. In success page you would see a button "ড্যাশবোর্ডে যান" which will take him to the dashboard. And ofc his dashboard data will update automatically "মোট পারমিট আবেদন" will be increased by 1. By default a user sees a empty dashboard when there is no application. When there is a application, he will see the dashboard with the application data or the dashboard_filled state. 
+
+- BTW the dashboard feels clumsy, the profile section in dashboard should be in the top right corner and is overflowed by some pixels. 
+
+
+

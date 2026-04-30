@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/auth_repository.dart';
 import '../data/auth_models.dart';
+import '../../../core/network/token_storage.dart';
+
 
 sealed class AuthState {}
 class AuthInitial extends AuthState {}
@@ -143,6 +145,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = ForgotPasswordSuccess();
     } catch (e) {
       print('❌ RESET PASSWORD PROVIDER: $e');
+      state = AuthError(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+  Future<void> logout() async {
+    state = AuthLoading();
+    try {
+      await TokenStorage.clearTokens();
+      state = AuthInitial();
+    } catch (e) {
+      print('❌ LOGOUT PROVIDER: $e');
       state = AuthError(e.toString().replaceAll('Exception: ', ''));
     }
   }

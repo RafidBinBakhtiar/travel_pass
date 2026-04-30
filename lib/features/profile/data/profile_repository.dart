@@ -12,14 +12,15 @@ class ProfileRepository {
       print('✅ GET PROFILE: ${response.data}');
 
       if (response.data['success'] != true) {
-        throw Exception(
-            response.data['message'] ?? 'Failed to fetch profile');
+        throw Exception(response.data['message'] ?? 'Failed to fetch profile');
       }
 
       final data = response.data['data'] as Map<String, dynamic>;
       return UserProfile.fromJson(data);
     } on DioException catch (e) {
-      print('❌ GET PROFILE ERROR: ${e.response?.statusCode} ${e.response?.data}');
+      print(
+        '❌ GET PROFILE ERROR: ${e.response?.statusCode} ${e.response?.data}',
+      );
       final msg = e.response?.data?['message'] as String?;
       throw Exception(msg ?? 'Failed to fetch profile');
     }
@@ -32,14 +33,15 @@ class ProfileRepository {
       print('✅ UPDATE PROFILE: ${response.data}');
 
       if (response.data['success'] != true) {
-        throw Exception(
-            response.data['message'] ?? 'Failed to update profile');
+        throw Exception(response.data['message'] ?? 'Failed to update profile');
       }
 
       final data = response.data['data'] as Map<String, dynamic>;
       return UserProfile.fromJson(data);
     } on DioException catch (e) {
-      print('❌ UPDATE PROFILE ERROR: ${e.response?.statusCode} ${e.response?.data}');
+      print(
+        '❌ UPDATE PROFILE ERROR: ${e.response?.statusCode} ${e.response?.data}',
+      );
       final msg = e.response?.data?['message'] as String?;
       throw Exception(msg ?? 'Failed to update profile');
     }
@@ -48,16 +50,21 @@ class ProfileRepository {
   /// POST /auth/change-password — change current user's password
   Future<void> changePassword(ChangePasswordRequest request) async {
     try {
-      final response =
-          await _dio.post('/auth/change-password', data: request.toJson());
+      final response = await _dio.post(
+        '/auth/change-password',
+        data: request.toJson(),
+      );
       print('✅ CHANGE PASSWORD: ${response.data}');
 
       if (response.data['success'] != true) {
         throw Exception(
-            response.data['message'] ?? 'Failed to change password');
+          response.data['message'] ?? 'Failed to change password',
+        );
       }
     } on DioException catch (e) {
-      print('❌ CHANGE PASSWORD ERROR: ${e.response?.statusCode} ${e.response?.data}');
+      print(
+        '❌ CHANGE PASSWORD ERROR: ${e.response?.statusCode} ${e.response?.data}',
+      );
       final msg = e.response?.data?['message'] as String?;
       throw Exception(msg ?? 'Failed to change password');
     }
