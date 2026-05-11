@@ -5,10 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_pass/core/constants/app_colors.dart';
 import 'package:travel_pass/core/constants/app_fonts.dart';
-import 'package:travel_pass/features/payment/data/payment_repository.dart';
-import 'package:travel_pass/features/payment/screens/payment_screens.dart';
+import 'package:travel_pass/features/payment/screens/fee_payment_screen.dart';
 import 'package:travel_pass/features/permit/data/permit_models.dart';
 import 'package:travel_pass/features/permit/provider/permit_provider.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class TravelPermitApplicationScreen extends ConsumerStatefulWidget {
   const TravelPermitApplicationScreen({super.key});
@@ -36,6 +36,8 @@ class _TravelPermitApplicationScreenState
   String? _destination;
   DateTime? _arrivalDate;
   DateTime? _departureDate;
+  String _mobileNumber = '';
+  String _guardianMobileNumber = '';
 
   static const List<String> _destinations = [
     'Cox\'s Bazar',
@@ -59,9 +61,6 @@ class _TravelPermitApplicationScreenState
   XFile? _nidFront;
   XFile? _nidBack;
   final _picker = ImagePicker();
-
-  // ── Step 3 payment gateway ─────────────────────────────────────
-  PaymentGateway? _selectedGateway;
 
   @override
   void dispose() {
@@ -123,9 +122,9 @@ class _TravelPermitApplicationScreenState
 
     final request = CreateApplicationRequest(
       touristName: _touristNameCtrl.text.trim(),
-      mobileNumber: '+88${_mobileCtrl.text.trim()}',
+      mobileNumber: _mobileNumber,
       guardianName: _guardianNameCtrl.text.trim(),
-      guardianMobile: '+88${_guardianMobileCtrl.text.trim()}',
+      guardianMobile: _guardianMobileNumber,
       permanentAddress: _permanentAddressCtrl.text.trim(),
       presentAddress: _presentAddressCtrl.text.trim(),
       occupation: _occupationCtrl.text.trim(),
@@ -201,31 +200,13 @@ class _TravelPermitApplicationScreenState
         ref.read(createApplicationProvider.notifier).reset();
         ref.read(applicationsProvider.notifier).loadApplications();
 
-        // Build the payment URL
-        final repo = PaymentRepository();
-        const successUrl = 'travelpass://payment/success';
-        const failUrl = 'travelpass://payment/fail';
-        final String payUrl;
-        if (_selectedGateway == PaymentGateway.shurjopay) {
-          payUrl = repo.getShurjopayUrl(
-            paymentId: app.id,
-            successUrl: successUrl,
-            failUrl: failUrl,
-          );
-        } else {
-          payUrl = repo.getBkashPayUrl(
-            paymentId: app.id,
-            successUrl: successUrl,
-            failUrl: failUrl,
-          );
-        }
-
-        // Navigate to WebView for payment
+        // Navigate to fee payment step matching the updated design.
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => PaymentWebViewScreen(
-              paymentUrl: payUrl,
+            builder: (_) => FeePaymentScreen(
               application: app,
+              feeAmount: 500,
+              paymentId: app.id,
             ),
           ),
         );
@@ -388,7 +369,7 @@ class _TravelPermitApplicationScreenState
             ),
             const SizedBox(height: 14),
             _fieldLabel(font, 'মোবাইল নম্বর'),
-            _phoneField(font, _mobileCtrl),
+            _phoneField(font, _mobileCtrl, (val) => _mobileNumber = val),
             const SizedBox(height: 14),
             _fieldLabel(font, 'পেশাঃ'),
             _textField(
@@ -417,7 +398,7 @@ class _TravelPermitApplicationScreenState
             ),
             const SizedBox(height: 14),
             _fieldLabel(font, 'অভিভাবকের মোবাইল নম্বর'),
-            _phoneField(font, _guardianMobileCtrl),
+            _phoneField(font, _guardianMobileCtrl, (val) => _guardianMobileNumber = val),
           ]),
           const SizedBox(height: 16),
 
@@ -615,39 +596,56 @@ class _TravelPermitApplicationScreenState
         ),
         const SizedBox(height: 20),
 
-        // ── Payment Gateway Selector ──────────────────────────────
-        Text(
-          'পেমেন্ট মাধ্যম নির্বাচন করুন',
-          style: TextStyle(
-              fontFamily: font,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textDark),
-        ),
-        const SizedBox(height: 12),
-
-        Row(
-          children: [
-            Expanded(
-              child: _gatewayCard(
-                font: font,
-                gateway: PaymentGateway.bkash,
-                label: 'bKash',
-                icon: Icons.phone_android_rounded,
-                color: const Color(0xFFE2136E),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF0FDF4),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFFDCFCE7)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF16A34A).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.account_balance_rounded,
+                  color: Color(0xFF16A34A),
+                  size: 24,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _gatewayCard(
-                font: font,
-                gateway: PaymentGateway.shurjopay,
-                label: 'ShurjoPay',
-                icon: Icons.account_balance_rounded,
-                color: const Color(0xFF5C2D91),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ShurjoPay',
+                      style: TextStyle(
+                        fontFamily: AppFonts.english,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    Text(
+                      'পেমেন্ট গেটওয়ে স্বয়ংক্রিয়ভাবে নির্বাচিত',
+                      style: TextStyle(
+                        fontFamily: font,
+                        fontSize: 12,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 24),
 
@@ -671,9 +669,7 @@ class _TravelPermitApplicationScreenState
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: isSubmitting || _selectedGateway == null
-                    ? null
-                    : _submit,
+                onPressed: isSubmitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGreen,
                   foregroundColor: Colors.white,
@@ -702,82 +698,6 @@ class _TravelPermitApplicationScreenState
         ),
         const SizedBox(height: 24),
       ],
-    );
-  }
-
-  Widget _gatewayCard({
-    required String font,
-    required PaymentGateway gateway,
-    required String label,
-    required IconData icon,
-    required Color color,
-  }) {
-    final isSelected = _selectedGateway == gateway;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedGateway = gateway),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.06) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? color : AppColors.borderGrey,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: AppFonts.english,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: isSelected ? color : AppColors.textDark,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              gateway == PaymentGateway.bkash
-                  ? 'মোবাইল পেমেন্ট'
-                  : 'অনলাইন পেমেন্ট',
-              style: TextStyle(
-                fontFamily: font,
-                fontSize: 11,
-                color: AppColors.textGrey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Selection indicator
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? color : AppColors.borderGrey,
-                  width: 2,
-                ),
-                color: isSelected ? color : Colors.transparent,
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check, color: Colors.white, size: 14)
-                  : null,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -877,35 +797,15 @@ class _TravelPermitApplicationScreenState
     );
   }
 
-  Widget _phoneField(String font, TextEditingController ctrl) {
-    return TextFormField(
+  Widget _phoneField(String font, TextEditingController ctrl, Function(String) onChanged) {
+    return IntlPhoneField(
       controller: ctrl,
-      keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         hintText: '17XXXXXXXX',
         hintStyle: TextStyle(
             fontFamily: font, fontSize: 13, color: AppColors.textGrey),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        prefixIcon: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('🇧🇩', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 4),
-              Text('+880',
-                  style: TextStyle(
-                      fontFamily: font,
-                      fontSize: 13,
-                      color: AppColors.textDark,
-                      fontWeight: FontWeight.w500)),
-              const SizedBox(width: 4),
-              Icon(Icons.arrow_drop_down,
-                  color: AppColors.textGrey, size: 18),
-            ],
-          ),
-        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.borderGrey),
@@ -926,9 +826,11 @@ class _TravelPermitApplicationScreenState
         filled: true,
         fillColor: AppColors.white,
       ),
+      initialCountryCode: 'BD',
+      onChanged: (phone) {
+        onChanged(phone.completeNumber);
+      },
       style: TextStyle(fontFamily: font, fontSize: 14),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'মোবাইল নম্বর দিন' : null,
     );
   }
 

@@ -27,6 +27,28 @@ class PermitRepository {
     }
   }
 
+  /// GET /applications — fetch all applications (new response model)
+  Future<List<ApplicationResponse>> getApplicationsV2() async {
+    try {
+      final response = await _dio.get('/applications');
+      if (response.data['success'] != true) {
+        throw Exception(
+          response.data['message'] ?? 'Failed to fetch applications',
+        );
+      }
+      final raw = response.data['data'];
+      final list = raw is List
+          ? raw
+          : ((raw['items'] ?? raw['data'] ?? []) as List<dynamic>);
+      return list
+          .map((e) => ApplicationResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] as String?;
+      throw Exception(msg ?? 'Failed to fetch applications');
+    }
+  }
+
   /// POST /applications — create a new application
   Future<PermitApplication> createApplication(
     CreateApplicationRequest req,
@@ -47,6 +69,26 @@ class PermitRepository {
     }
   }
 
+  /// POST /applications — create new application (new response model)
+  Future<ApplicationResponse> createApplicationV2(
+    CreateApplicationRequest req,
+  ) async {
+    try {
+      final response = await _dio.post('/applications', data: req.toJson());
+      if (response.data['success'] != true) {
+        throw Exception(
+          response.data['message'] ?? 'Failed to create application',
+        );
+      }
+      return ApplicationResponse.fromJson(
+        response.data['data'] as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] as String?;
+      throw Exception(msg ?? 'Failed to create application');
+    }
+  }
+
   /// GET /applications/:id — fetch a single application
   Future<PermitApplication> getApplication(int id) async {
     try {
@@ -57,6 +99,24 @@ class PermitRepository {
         );
       }
       return PermitApplication.fromJson(
+        response.data['data'] as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] as String?;
+      throw Exception(msg ?? 'Failed to fetch application');
+    }
+  }
+
+  /// GET /applications/:id — fetch a single application (new response model)
+  Future<ApplicationResponse> getApplicationV2(int id) async {
+    try {
+      final response = await _dio.get('/applications/$id');
+      if (response.data['success'] != true) {
+        throw Exception(
+          response.data['message'] ?? 'Failed to fetch application',
+        );
+      }
+      return ApplicationResponse.fromJson(
         response.data['data'] as Map<String, dynamic>,
       );
     } on DioException catch (e) {
@@ -99,6 +159,23 @@ class PermitRepository {
     } on DioException catch (e) {
       final msg = e.response?.data?['message'] as String?;
       throw Exception(msg ?? 'Failed to fetch certificate');
+    }
+  }
+
+  /// GET /applications/:id/download — download permit PDF
+  Future<List<int>> downloadPermitPDF(int id) async {
+    try {
+      final response = await _dio.get(
+        '/applications/$id/download',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      if (response.statusCode == 200) {
+        return response.data as List<int>;
+      }
+      throw Exception('Failed to download PDF');
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] as String?;
+      throw Exception(msg ?? 'Failed to download PDF');
     }
   }
 }

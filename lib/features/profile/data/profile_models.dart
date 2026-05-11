@@ -6,6 +6,7 @@ class UserProfile {
   final bool isEmailVerified;
   final List<String> roles;
   final List<String> permissions;
+  final String touristType;
 
   UserProfile({
     required this.id,
@@ -15,6 +16,7 @@ class UserProfile {
     required this.isEmailVerified,
     required this.roles,
     required this.permissions,
+    required this.touristType,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -34,10 +36,11 @@ class UserProfile {
               ?.map((e) => e.toString())
               .toList() ??
           [],
+      touristType: json['touristType'] as String? ?? 'DOMESTIC',
     );
   }
 
-  UserProfile copyWith({String? fullName, String? email, String? phone}) {
+  UserProfile copyWith({String? fullName, String? email, String? phone, String? touristType}) {
     return UserProfile(
       id: id,
       fullName: fullName ?? this.fullName,
@@ -46,6 +49,7 @@ class UserProfile {
       isEmailVerified: isEmailVerified,
       roles: roles,
       permissions: permissions,
+      touristType: touristType ?? this.touristType,
     );
   }
 }

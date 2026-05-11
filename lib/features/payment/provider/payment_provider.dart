@@ -7,7 +7,7 @@ final paymentRepositoryProvider =
 
 // ── Selected gateway state ───────────────────────────────────────
 final selectedGatewayProvider =
-    StateProvider<PaymentGateway?>((ref) => null);
+    StateProvider<PaymentGateway>((ref) => PaymentGateway.shurjopay);
 
 // ── Payment initiation state ─────────────────────────────────────
 sealed class PaymentInitState {}
@@ -18,8 +18,7 @@ class PaymentInitLoading extends PaymentInitState {}
 
 class PaymentInitReady extends PaymentInitState {
   final String url;
-  final PaymentGateway gateway;
-  PaymentInitReady({required this.url, required this.gateway});
+  PaymentInitReady({required this.url});
 }
 
 class PaymentInitError extends PaymentInitState {
@@ -35,28 +34,16 @@ class PaymentInitNotifier extends StateNotifier<PaymentInitState> {
   /// Build the gateway URL and emit PaymentInitReady.
   void initiatePayment({
     required int applicationId,
-    required PaymentGateway gateway,
+    PaymentGateway gateway = PaymentGateway.shurjopay,
   }) {
-    // Deep-link / scheme that the WebView will intercept to detect success/fail
     const successUrl = 'travelpass://payment/success';
     const failUrl = 'travelpass://payment/fail';
-
-    final String url;
-    if (gateway == PaymentGateway.bkash) {
-      url = _repo.getBkashPayUrl(
-        paymentId: applicationId,
-        successUrl: successUrl,
-        failUrl: failUrl,
-      );
-    } else {
-      url = _repo.getShurjopayUrl(
-        paymentId: applicationId,
-        successUrl: successUrl,
-        failUrl: failUrl,
-      );
-    }
-
-    state = PaymentInitReady(url: url, gateway: gateway);
+    final url = _repo.getShurjopayUrl(
+      paymentId: applicationId,
+      successUrl: successUrl,
+      failUrl: failUrl,
+    );
+    state = PaymentInitReady(url: url);
   }
 
   void reset() => state = PaymentInitIdle();

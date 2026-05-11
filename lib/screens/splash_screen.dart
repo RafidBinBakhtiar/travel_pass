@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_pass/core/constants/app_colors.dart';
 import 'package:travel_pass/main.dart';
 
@@ -37,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset('assets/images/Logo.svg', height: 100),
+            Image.asset('assets/images/logo.png', height: 100),
             const SizedBox(height: 40),
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
@@ -53,29 +52,4 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       ),
     );
   }
-}
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: AppColors.white,
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset('assets/images/Logo.svg', height: 100),
-          const SizedBox(height: 40),
-          const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
-            strokeWidth: 3,
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Loading...',
-            style: TextStyle(fontSize: 16, color: AppColors.textGrey),
-          ),
-        ],
-      ),
-    ),
-  );
 }

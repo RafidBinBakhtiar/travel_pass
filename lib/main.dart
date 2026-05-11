@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_pass/l10n/app_localizations.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/permit/screens/travel_permit_application_screen.dart';
+import 'features/permit/screens/all_permits_screen.dart';
 import 'features/profile/screens/profile_screen.dart';
+import 'features/payment/screens/payment_success_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 import 'core/constants/app_fonts.dart';
@@ -65,6 +67,12 @@ class MyApp extends ConsumerWidget {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/apply': (context) => const TravelPermitApplicationScreen(),
+        '/all-permits': (context) => const AllPermitsScreen(),
+        '/payment-success': (context) => const PaymentSuccessScreen(
+              applicationId: '123456',
+              feeAmount: '500',
+              touristName: 'User',
+            ),
       },
     );
   }

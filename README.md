@@ -306,3 +306,200 @@ I want to implement a new feature in the application. I want to integrate paymen
 
 
 
+=====================!========================
+id: (The Payment Id)
+1. I just added a navbar in the design. Just update the navbar in dashboard. Current dashboard logic is when there is picture when the state is "এখনও কোনো আবেদন করা হয়নি". When the users "ট্রাভেল পারমিট আবেদন করুন" the system opens a draft, it saves the state. In Dashboard module there is ড্যাশবোর্ড, মেনু, সকল পারমিট. The dashboard will have Horizontal Scroll. On "বর্তমান সক্রিয় আবেদনসমূহ" User will be able download PDF to view the permit application if approved! It will call this api: https://travel-pass-backend.onrender.com/api/applications/:id/download
+
+2. Travel Permit application is done upto nid upload. We have to change the design of "ফি প্রদান" page. The "Pay Fee.png" is the design. After a user clicks "ফি প্রদান করুন" the user will hit a API: https://travel-pass-backend.onrender.com/api/payments/shurjopay/pay?paymentId=59&successUrl=https://example.com/success&failUrl=https://example.com/fail
+
+It should take the user to the browser and there is a callback function: https://travel-pass-backend.onrender.com/api/payments/shurjopay/callback?order_id=sp-order-id
+
+After a succesfull payment the user will be shown "Fee Paid Successfully.png" page. And in the dashboard "বর্তমান সক্রিয় আবেদনসমূহ" will get updated accordingly. We also have a admin who will approve or reject the Travel Permit application. So it will also be updated accordingly. 
+When a application is sent: 
+API: https://travel-pass-backend.onrender.com/api/applications
+{
+    "touristName": "Rafid",
+    "mobileNumber": "+8801712345678",
+    "guardianName": "Jane Doe",
+    "guardianMobile": "+8801911110990",
+    "presentAddress": "Cox's Bazar, Bangladesh",
+    "occupation": "Student",
+    "destinationId": 1,
+    "arrivalDate": "2024-04-01T10:00:00Z",
+    "departureDate": "2024-04-05T18:00:00Z",
+    "touristType": "DOMESTIC",
+    "documents": [
+        { "name": "NID", "url": "https://example.com/media/nid.jpg" },
+        { "name": "Photo", "url": "https://example.com/media/photo.jpg" }
+    ]
+}
+
+So, when a successfull application is filled the response is:
+{
+    "success": true,
+    "message": "অপারেশন সফল হয়েছে",
+    "data": {
+        "id": 63,
+        "userId": 5,
+        "user": {
+            "id": 5,
+            "fullName": "Rafid Bin Bakhtiar",
+            "touristType": "DOMESTIC",
+            "email": "abc@gmail.com",
+            "phone": "+8801907199135",
+            "designation": null,
+            "department": null,
+            "isEmailVerified": false,
+            "isPhoneVerified": true,
+            "isActive": true,
+            "createdAt": "2026-04-29T04:13:56.985Z",
+            "updatedAt": "2026-05-07T09:13:18.732Z"
+        },
+        "touristType": "DOMESTIC",
+        "touristName": "Rafid",
+        "mobileNumber": "+8801712345678",
+        "guardianName": "Jane Doe",
+        "guardianMobile": "+8801911110990",
+        "permanentAddress": null,
+        "presentAddress": "Cox's Bazar, Bangladesh",
+        "occupation": "Student",
+        "placeOfOrigin": null,
+        "destinationId": 1,
+        "arrivalDate": "2024-04-01T10:00:00.000Z",
+        "departureDate": "2024-04-05T18:00:00.000Z",
+        "status": "DRAFT",
+        "identityType": null,
+        "identityNumber": null,
+        "numberOfVisitors": 1,
+        "documents": [
+            {
+                "name": "NID",
+                "url": "https://example.com/media/nid.jpg"
+            },
+            {
+                "name": "Photo",
+                "url": "https://example.com/media/photo.jpg"
+            }
+        ],
+        "adminRemarks": null,
+        "verificationRemarks": null,
+        "createdAt": "2026-05-08T04:48:21.174Z",
+        "updatedAt": "2026-05-08T04:48:21.174Z",
+        "checkedInAt": null,
+        "checkedOutAt": null,
+        "displayId": null
+    },
+    "errors": null
+}
+
+Use phone input for flutter in create application API: https://travel-pass-backend.onrender.com/api/applications & you must put the access_token for creating applications. 
+
+
+3. So there is all permit view option in "সকল পারমিট" (All Permit.png). There are four states "আবেদন জমা", "ফি প্রদান","যাচাইকরণ","অনুমোদন". 
+
+- if a permit application is approved then, "View_Permit_Approved.png" design.
+- if a permit application is under review, "View Permit Under Review.png" design.
+- if a permit application is fee not paid, "View Permit Fee Not Paid.png" design.
+- If a permit application is not completed by user, "View Permit Not Completed.png" design.
+- if a permit application is rejected, "View Permit Rejected.png" design.
+
+"সকল পারমিট"(All Permit.png) has filter and search option implement those as well. The design is given in filters.png
+
+Use date_picker_plus 7.0.0 for any date related thing.
+
+
+4. The profile section and change password is already done. In Profile Screen. Just replicate the entire design I provide in Profile.png
+
+- Implement the change password and update profile section.
+Update Profile hit api: https://travel-pass-backend.onrender.com/api/auth/me
+Send:
+{
+    "fullName": "System Admin (Updated)",
+    "email": "admin.updated@tourism.com",
+    "phone": "+8801700000001",
+    "touristType": "DOMESTIC"
+}
+Response:
+{
+    "success": true,
+    "message": "অপারেশন সফল হয়েছে",
+    "data": {
+        "id": 5,
+        "fullName": "System Admin (Updated)",
+        "touristType": "DOMESTIC",
+        "email": "admin.updated@tourism.com",
+        "phone": "+8801700000001",
+        "designation": null,
+        "department": null,
+        "isEmailVerified": false,
+        "isPhoneVerified": false,
+        "isActive": true,
+        "createdAt": "2026-04-29T04:13:56.985Z",
+        "updatedAt": "2026-05-08T06:52:00.885Z"
+    },
+    "errors": null
+}
+
+General:
+
+Follow provided design files exactly
+Use reusable components
+Proper spacing and typography
+Smooth animations/transitions
+Responsive across Android/iOS screen sizes
+Clean Bengali typography support
+Use shimmer/skeleton loaders where appropriate
+Empty state illustrations where applicable
+Maintain accessibility and readable contrast
+
+Architecture:
+
+Repository pattern
+Proper API abstraction
+DTO/model separation
+Centralized status handling
+Enum-based application states
+Clean routing/navigation
+
+State Management:
+
+Keep current project pattern
+Avoid duplicated logic
+Ensure screens reactively update
+
+Performance:
+
+Lazy loading where needed
+Avoid unnecessary rebuilds
+Cache API responses intelligently
+
+Deliverables:
+
+Fully integrated UI
+Functional APIs
+Proper state transitions
+Payment flow working
+Permit tracking working
+Search/filter working
+PDF download/view working
+Profile update working
+Production-ready polished implementation
+
+
+
+Payment Gateway
+1. Surjopay
+https://travel-pass-backend.onrender.com/api/payments/shurjopay/pay?paymentId=25&successUrl=https://example.com/success&failUrl=https://example.com/fail
+
+
+2. Bkash
+The API is Initiate Bkash Payment the URL to Hit is, https://travel-pass-backend.onrender.com/api/payments/bkash/pay?paymentId={payment_id}&successUrl=https://example.com/success&failUrl=https://example.com/fail
+
+And there is two callback url.
+Surjopay: {{base_url}}/payments/shurjopay/callback?order_id=sp-order-id
+Bkash: {{base_url}}/payments/bkash/callback?status=success&paymentID=bkash-payment-id
+
+So, when user clicks on 'ফি প্রদান করুন', the user should be redirected to the payment gateway. After successfull payment his application will be updated to dashboard. And the number of application will be increased by 1. Moreover the state of the application form will always be updated. "ড্রাফট" -> "প্রক্রিয়াধীন". 
+
+
+==========================================!===========================================
